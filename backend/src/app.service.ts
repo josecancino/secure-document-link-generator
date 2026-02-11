@@ -83,6 +83,10 @@ export class AppService implements OnModuleInit {
     }
   }
 
+  findAllLinks() {
+    return this.db.query("SELECT * FROM links").all();
+  }
+
   getHello(): string {
     return 'Hello World!';
   }

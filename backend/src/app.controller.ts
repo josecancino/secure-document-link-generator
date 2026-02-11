@@ -24,4 +24,9 @@ export class AppController {
   redeemLink(@Param('token') token: string) {
     return this.appService.redeemLink(token);
   }
+
+  @Get('debug')
+  getAll() {
+    return this.appService.findAllLinks();
+  }
 }
