@@ -1,39 +1,9 @@
-import { useEffect, useState, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
-
-const API_URL = import.meta.env.VITE_API_URL + "/docs/view";
+import { useVerifyToken } from "../hooks/useVerifyToken";
 
 export function ViewDocument() {
   const { token } = useParams<{ token: string }>();
-  const [status, setStatus] = useState<"loading" | "success" | "error">(
-    token ? "loading" : "error",
-  );
-  const [docName, setDocName] = useState<string | null>(null);
-  const hasFetched = useRef(false);
-
-  useEffect(() => {
-    if (!token || hasFetched.current) return;
-    hasFetched.current = true;
-
-    const verifyToken = async () => {
-      try {
-        const response = await fetch(`${API_URL}/${token}`);
-
-        if (response.ok) {
-          const data = await response.json();
-          setDocName(data.documentName);
-          setStatus("success");
-        } else {
-          setStatus("error");
-        }
-      } catch (err) {
-        console.error(err);
-        setStatus("error");
-      }
-    };
-
-    verifyToken();
-  }, [token]);
+  const { status, docName } = useVerifyToken(token);
 
   if (status === "loading") {
     return <div className="card">Loading...</div>;
@@ -41,10 +11,10 @@ export function ViewDocument() {
 
   if (status === "error") {
     return (
-      <div className="card" style={{ borderColor: "var(--color-error)" }}>
-        <h2 style={{ color: "var(--color-error)" }}>Access Denied</h2>
+      <div className="card error-card">
+        <h2 className="error-text">Access Denied</h2>
         <p>Invalid or expired link.</p>
-        <div style={{ marginTop: "1.5rem" }}>
+        <div className="mt-1">
           <Link to="/">Go Back Home</Link>
         </div>
       </div>
@@ -52,23 +22,12 @@ export function ViewDocument() {
   }
 
   return (
-    <div className="card" style={{ borderColor: "var(--color-success)" }}>
+    <div className="card success-card">
       <div className="status-badge status-success">Secure Access Granted</div>
       <h2>Document Viewer</h2>
       <p>You are now securely viewing:</p>
-      <div
-        style={{
-          fontSize: "1.5rem",
-          fontWeight: "bold",
-          margin: "1.5rem 0",
-          padding: "1rem",
-          backgroundColor: "rgba(0,0,0,0.2)",
-          borderRadius: "var(--radius-md)",
-        }}
-      >
-        {docName}
-      </div>
-      <div style={{ marginTop: "2rem" }}>
+      <div className="doc-viewer-name">{docName}</div>
+      <div className="mt-2">
         <Link to="/">Go Back Home</Link>
       </div>
     </div>
