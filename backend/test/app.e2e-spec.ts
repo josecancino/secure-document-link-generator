@@ -2,23 +2,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import request from 'supertest';
 import { AppModule } from './../src/app.module';
-
-interface GenerateLinkResponse {
-  token: string;
-  link: string;
-}
-
-interface ViewDocumentResponse {
-  documentName: string;
-}
-
-interface ErrorResponse {
-  error: string;
-}
+import {
+  GenerateLinkResponse,
+  ErrorResponse,
+  LinkRecord,
+} from '../src/interfaces';
 
 describe('AppController (e2e)', () => {
   let app: NestExpressApplication;
-  let storedToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -49,8 +40,9 @@ describe('AppController (e2e)', () => {
       .get('/api/health')
       .expect(200);
 
-    expect(response.body.status).toBe('ok');
-    expect(response.body.database).toBe('connected');
+    const body = response.body as { status: string; database: string };
+    expect(body.status).toBe('ok');
+    expect(body.database).toBe('connected');
     console.log('TRACE: [GET /api/health] System is healthy!');
   });
 
@@ -65,8 +57,6 @@ describe('AppController (e2e)', () => {
     expect(body.token).toBeDefined();
     expect(body.link).toBeDefined();
     expect(body.link).toContain('/docs/view/');
-
-    storedToken = body.token;
   });
 
   it('/api/generate-link (POST) - Fail (Validation)', async () => {
@@ -103,26 +93,28 @@ describe('AppController (e2e)', () => {
       .post('/api/generate-link')
       .send({ documentName: 'Doc-A.pdf' })
       .expect(201);
-    const tokenA = resA.body.token;
+    const tokenA = (resA.body as GenerateLinkResponse).token;
 
     // 2. Generate link for Doc B
     const resB = await request(app.getHttpServer())
       .post('/api/generate-link')
       .send({ documentName: 'Doc-B.pdf' })
       .expect(201);
-    const tokenB = resB.body.token;
+    const tokenB = (resB.body as GenerateLinkResponse).token;
 
     // 3. Debug should show both
     const debugRes = await request(app.getHttpServer())
       .get('/api/debug')
       .expect(200);
-    expect(debugRes.body.length).toBeGreaterThanOrEqual(3); // +1 from previous test
+    expect((debugRes.body as LinkRecord[]).length).toBeGreaterThanOrEqual(3); // +1 from previous test
 
     // 4. Redeem Doc B first
     const viewB = await request(app.getHttpServer())
       .get(`/api/docs/view/${tokenB}`)
       .expect(200);
-    expect(viewB.body.documentName).toBe('Doc-B.pdf');
+    expect((viewB.body as { documentName: string }).documentName).toBe(
+      'Doc-B.pdf',
+    );
 
     // 5. Try Doc B again (should fail)
     await request(app.getHttpServer())
@@ -133,7 +125,9 @@ describe('AppController (e2e)', () => {
     const viewA = await request(app.getHttpServer())
       .get(`/api/docs/view/${tokenA}`)
       .expect(200);
-    expect(viewA.body.documentName).toBe('Doc-A.pdf');
+    expect((viewA.body as { documentName: string }).documentName).toBe(
+      'Doc-A.pdf',
+    );
   });
 
   it('/api/docs/view/:token (GET) - Fail (Invalid Token)', async () => {
@@ -141,6 +135,8 @@ describe('AppController (e2e)', () => {
       .get('/api/docs/view/invalid-token-123')
       .expect(404);
 
-    expect(response.body.error).toEqual('Invalid or expired link.');
+    expect((response.body as ErrorResponse).error).toEqual(
+      'Invalid or expired link.',
+    );
   });
 });

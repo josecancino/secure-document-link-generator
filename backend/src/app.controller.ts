@@ -1,9 +1,10 @@
 import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { AppService } from './app.service';
+import { GenerateLinkDto } from './interfaces';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) { }
+  constructor(private readonly appService: AppService) {}
 
   @Get()
   getHello(): string {
@@ -16,8 +17,8 @@ export class AppController {
   }
 
   @Post('generate-link')
-  generateLink(@Body('documentName') documentName: string) {
-    return this.appService.generateLink(documentName);
+  generateLink(@Body() generateLinkDto: GenerateLinkDto) {
+    return this.appService.generateLink(generateLinkDto.documentName);
   }
 
   @Get('docs/view/:token')
