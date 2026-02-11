@@ -44,3 +44,17 @@ bun run lint
 cd backend
 bun run lint
 ```
+
+## Testing
+
+The project includes comprehensive E2E tests for the backend using **Bun Test** and **Supertest**. These tests cover:
+- Basic connectivity and health checks.
+- Secure link generation and token issuance.
+- One-time link redemption (verifying links fail after first use).
+- Multi-document session flows.
+- Debug endpoint inspection.
+
+```bash
+cd backend
+bun run test:e2e
+```
