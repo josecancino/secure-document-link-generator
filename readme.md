@@ -61,6 +61,16 @@ bun run dev
 | `/api/debug` | `GET` | **(Dev Only)** Shows all active/redeemed tokens in memory. |
 | `/api/health` | `GET` | System health check. |
 
+### Security & Validation Features
+
+-   **One-Time Use**: Tokens are strictly single-use. Once redeemed, the record is updated and subsequent attempts return a 404.
+-   **Token Expiration**: For enhanced security, links are valid for **15 minutes** from creation.
+-   **Input Validation**: 
+    -   `documentName` is required and must be between 3 and 50 characters.
+    -   Requests failing validation return a `400 Bad Request`.
+-   **Minimal Logging**: Backend tracks token generation and redemption (with masked tokens) for auditing purposes via NestJS Logger.
+-   **Copy-to-Clipboard**: Frontend includes a one-click copy feature with visual feedback.
+
 ### Testing Lifecycle Example
 
 To test the full flow via CLI:
@@ -133,6 +143,8 @@ The project includes comprehensive E2E tests for the backend using **Bun Test** 
 - Basic connectivity and health checks.
 - Secure link generation and token issuance.
 - One-time link redemption (verifying links fail after first use).
+- **Link expiration logic (valid for 15 minutes).**
+- **Input validation performance (invalid names, length checks).**
 - Multi-document session flows.
 - Debug endpoint inspection.
 

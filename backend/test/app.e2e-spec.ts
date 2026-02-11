@@ -69,6 +69,26 @@ describe('AppController (e2e)', () => {
     storedToken = body.token;
   });
 
+  it('/api/generate-link (POST) - Fail (Validation)', async () => {
+    // Empty name
+    await request(app.getHttpServer())
+      .post('/api/generate-link')
+      .send({ documentName: '' })
+      .expect(400);
+
+    // Too short
+    await request(app.getHttpServer())
+      .post('/api/generate-link')
+      .send({ documentName: 'ab' })
+      .expect(400);
+
+    // Too long (over 50)
+    await request(app.getHttpServer())
+      .post('/api/generate-link')
+      .send({ documentName: 'a'.repeat(51) })
+      .expect(400);
+  });
+
   it('/api/debug (GET) - Check initial state', async () => {
     const response = await request(app.getHttpServer())
       .get('/api/debug')
