@@ -11,21 +11,35 @@ Ensure you have the following installed:
 
 ## Running the Application
 
-To run the application locally, open two terminal tabs/windows:
+To run the application, you have two options:
 
-### 1. Start Backend
+### Option 1: Using Docker (Recommended)
+
+Run the entire stack with a single command:
+
+```bash
+docker compose up --build
+```
+-   **Frontend**: `http://localhost:5173`
+-   **Backend API**: `http://localhost:3000/api`
+
+### Option 2: Local Development
+
+Open two terminal tabs/windows:
+
+**1. Start Backend**
 ```bash
 cd backend
 bun start:dev
 ```
 *   Server runs on: `http://localhost:3000`
 
-### 2. Start Frontend
+**2. Start Frontend**
 ```bash
 cd frontend
 bun run dev
 ```
-*   Client runs on: `http://localhost:5173` (or the next available port)
+*   Client runs on: `http://localhost:5173`
 
 ---
 
