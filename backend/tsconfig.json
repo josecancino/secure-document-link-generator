@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "types": ["bun-types"],
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "resolvePackageJsonExports": true,
@@ -21,6 +20,12 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": true,
     "strictBindCallApply": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "types": [
+      "bun-types",
+      "jest",
+      "node",
+      "supertest"
+    ]
   }
 }
