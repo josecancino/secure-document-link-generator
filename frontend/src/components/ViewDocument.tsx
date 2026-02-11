@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_URL + "/docs/view";
@@ -9,17 +9,15 @@ export function ViewDocument() {
     token ? "loading" : "error",
   );
   const [docName, setDocName] = useState<string | null>(null);
+  const hasFetched = useRef(false);
 
   useEffect(() => {
-    if (!token) return;
-
-    const controller = new AbortController();
+    if (!token || hasFetched.current) return;
+    hasFetched.current = true;
 
     const verifyToken = async () => {
       try {
-        const response = await fetch(`${API_URL}/${token}`, {
-          signal: controller.signal,
-        });
+        const response = await fetch(`${API_URL}/${token}`);
 
         if (response.ok) {
           const data = await response.json();
@@ -29,17 +27,12 @@ export function ViewDocument() {
           setStatus("error");
         }
       } catch (err) {
-        if (controller.signal.aborted) return;
         console.error(err);
         setStatus("error");
       }
     };
 
     verifyToken();
-
-    return () => {
-      controller.abort();
-    };
   }, [token]);
 
   if (status === "loading") {
