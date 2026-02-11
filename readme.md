@@ -28,3 +28,19 @@ bun run dev
 *   Client runs on: `http://localhost:5173` (or the next available port)
 
 ---
+
+## Code Quality
+
+This project uses **ESLint** and **Prettier** to ensure code consistency and quality.
+
+To check and fix linting issues:
+
+```bash
+# Frontend
+cd frontend
+bun run lint
+
+# Backend
+cd backend
+bun run lint
+```
